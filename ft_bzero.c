@@ -5,12 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/20 14:39:13 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/23 13:38:58 by rperez-t         ###   ########.fr       */
+/*   Created: 2023/11/24 16:22:39 by rperez-t          #+#    #+#             */
+/*   Updated: 2023/11/24 16:22:47 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "ft_print.h"
 
 void	ft_bzero(void *ptr, size_t bytes)
 {

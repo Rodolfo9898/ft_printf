@@ -5,12 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/20 12:12:09 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/23 14:30:04 by rperez-t         ###   ########.fr       */
+/*   Created: 2023/11/24 16:22:16 by rperez-t          #+#    #+#             */
+/*   Updated: 2023/11/24 16:22:26 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "ft_print.h"
 
 void	*ft_memset(void *ptr, int value, size_t bytes)
 {
