@@ -1,23 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   test.c                                             :+:      :+:    :+:   */
+/*   ft_printf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rperez-t <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/28 11:09:20 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/28 17:07:39 by rperez-t         ###   ########.fr       */
+/*   Updated: 2023/11/28 19:17:18 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include<stdio.h> 
-#include<stdarg.h>                      
+                      
 #include "ft_print.h"
 //void Myprintf(char *,...);              //Our printf function
 //char* convert(unsigned int, int);       //Convert integer number into octal, hex, etc.
-void ft_printf(char *formatter, ...);
+void	ft_printf(char *formatter, ...);
 
-int main(void) 
+int	main(void) 
 { 
     ft_printf(" WWW.FIRMCODES.COM%sthrekjshdfrk %c\n%i", "HEY", '1', 213678); 
     return (0);
@@ -25,19 +23,20 @@ int main(void)
 
 int	ft_switch(char *str, int index, va_list arguments)
 {
-	int	return_value;
+	int return_value;
+	char *pointer_value;
 
 	if(str[index] == 'c')
 	{	
 		return_value = va_arg(arguments, int);
 		ft_putchar_fd(return_value, 1);
 	}
-	if(str[index] == 's')
+	else if(str[index] == 's')
 	{
-		return_value = va_arg(arguments,char *);
-		ft_putstr_fd((char *)return_value, 1);
+		pointer_value = va_arg(arguments,char *);
+		ft_putstr_fd(pointer_value, 1);
 	}
-	if(str[index] == 'i')
+	else if(str[index] == 'i'|| str[index] == 'd')
 	{
 		return_value = va_arg(arguments, int);
 		ft_putnbr_fd(return_value, 1);
@@ -45,9 +44,7 @@ int	ft_switch(char *str, int index, va_list arguments)
 	return index;
 }
 
-
-
-void ft_printf(char *formatter, ...)
+void	ft_printf(char *formatter, ...)
 {
 	char	*current;
 	size_t	index;

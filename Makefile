@@ -6,13 +6,13 @@
 #    By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/23 14:34:39 by rperez-t          #+#    #+#              #
-#    Updated: 2023/11/24 11:01:58 by rperez-t         ###   ########.fr        #
+#    Updated: 2023/11/28 18:35:18 by rperez-t         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= libftprintf.a
 
-SRCS		= ft_memset.c ft_bzero.c ft_calloc.c
+SRCS		= ft_putchar_fd.c ft_putnbr_fd.c ft_putstr_fd.c ft_printf.c
 
 #BONUS_SRCS	= ft_lstnew.c ft_lstadd_front.c ft_lstsize.c ft_lstlast.c \
 			  ft_lstadd_back.c ft_lstdelone.c ft_lstclear.c ft_lstiter.c \
