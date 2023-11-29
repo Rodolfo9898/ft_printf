@@ -6,7 +6,7 @@
 /*   By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/28 11:09:20 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/29 16:01:42 by rperez-t         ###   ########.fr       */
+/*   Updated: 2023/11/29 16:40:40 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	ft_printf(const char *format, ...)
 		index++;
 	}
 	va_end(arguments);
-	return (50);
+	return (index);
 }
 /*
 int	main(void)
