@@ -6,45 +6,44 @@
 /*   By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/28 11:09:20 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/29 15:18:19 by rperez-t         ###   ########.fr       */
+/*   Updated: 2023/11/29 15:57:57 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_print.h"
+#include "ft_printf.h"
 #include <stdio.h>
 
 //void Myprintf(char* format,...);
-void	ft_printf(char *formatter, ...);
+//void	ft_printf(char *formatter, ...);
 //char *convert(unsigned int num, int base);
 //Myprintf("TesTing out\n%s\n%c\n%x\n%X\n%%\n%d", "HEY", '1', 15, -15, -5);
-
+/*
 int	main(void)
 {
 	ft_printf("TesTing out\n%s\n%c\n%x\n%X\n%%\n%d", "HEY", '1', 15, -15, -5);
 	return (0);
-}
+}*/
 
-void	ft_printf(char *formatter, ...)
+int	ft_printf(const char *format, ...)
 {
-	char	*current;
 	size_t	index;
 	va_list	arguments;
 
-	va_start(arguments, formatter);
+	va_start(arguments, format);
 	index = 0;
-	current = formatter;
-	while (current[index] != '\0')
+	while (format[index] != '\0')
 	{
-		if (current[index] != '%')
-			ft_putchar_fd(current[index], 1);
+		if (format[index] != '%')
+			ft_putchar_fd(format[index], 1);
 		else
 		{
 			index++;
-			index = ft_switch(current, index, arguments);
+			index = ft_switch(format, index, arguments);
 		}
 		index++;
 	}
 	va_end(arguments);
+	return (50);
 }
 /*
 void Myprintf(char* format,...) 

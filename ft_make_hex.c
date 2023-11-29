@@ -6,11 +6,11 @@
 /*   By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 14:45:09 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/29 15:24:26 by rperez-t         ###   ########.fr       */
+/*   Updated: 2023/11/29 15:50:36 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_print.h"
+#include "ft_printf.h"
 
 char	*ft_make_hex(unsigned int num, int lowercase)
 {

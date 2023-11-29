@@ -6,13 +6,13 @@
 /*   By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 14:35:36 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/29 15:24:01 by rperez-t         ###   ########.fr       */
+/*   Updated: 2023/11/29 15:56:57 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_print.h"
+#include "ft_printf.h"
 
-int	ft_switch2(char *str, int index, va_list arguments)
+int	ft_switch2(const char *str, int index, va_list arguments)
 {
 	int		return_value;
 	char	*pointer_value;
@@ -29,7 +29,7 @@ int	ft_switch2(char *str, int index, va_list arguments)
 	return (index);
 }
 
-int	ft_switch(char *str, int index, va_list arguments)
+int	ft_switch(const char *str, int index, va_list arguments)
 {
 	int		return_value;
 	char	*pointer_value;
