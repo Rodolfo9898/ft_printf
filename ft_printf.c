@@ -6,7 +6,7 @@
 /*   By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/28 11:09:20 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/29 15:12:17 by rperez-t         ###   ########.fr       */
+/*   Updated: 2023/11/29 15:18:19 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,11 @@
 //void Myprintf(char* format,...);
 void	ft_printf(char *formatter, ...);
 //char *convert(unsigned int num, int base);
+//Myprintf("TesTing out\n%s\n%c\n%x\n%X\n%%\n%d", "HEY", '1', 15, -15, -5);
 
 int	main(void)
 {
-	//Myprintf("WWW.FIRMCODES.COM\n%s\nthrekjshdfrk\n%c\n%x\n%X\n%%\n%d", "HEY", '1', 15, -15,-5);
-	ft_printf("WWW.FIRMCODES.COM\n%s\nthrekjshdfrk\n%c\n%x\n%X\n%%\n%d", "HEY", '1', 15, -15,-5);
+	ft_printf("TesTing out\n%s\n%c\n%x\n%X\n%%\n%d", "HEY", '1', 15, -15, -5);
 	return (0);
 }
 
