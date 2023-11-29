@@ -6,53 +6,53 @@
 /*   By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 14:35:36 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/29 15:56:57 by rperez-t         ###   ########.fr       */
+/*   Updated: 2023/11/29 22:20:50 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	ft_switch2(const char *str, int index, va_list arguments)
+int	*ft_switch2(const char *str, va_list arguments, int *send)
 {
 	int		return_value;
 	char	*pointer_value;
 
-	if (str[index] == 'X' || str[index] == 'x')
+	if (str[send[0]] == 'i' || str[send[0]] == 'd')
+	{
+		return_value = va_arg(arguments, int);
+		send[1] += ft_putnbr(return_value);
+	}
+	else if (str[send[0]] == 'X' || str[send[0]] == 'x')
 	{
 		return_value = va_arg(arguments, unsigned int);
-		if (str[index] == 'x')
+		if (str[send[0]] == 'x')
 			pointer_value = ft_make_hex(return_value, 1);
 		else
 			pointer_value = ft_make_hex(return_value, 0);
 		ft_putstr_fd(pointer_value, 1);
 	}
-	return (index);
+	return (send);
 }
 
-int	ft_switch(const char *str, int index, va_list arguments)
+int	*ft_switch(const char *str, va_list arguments, int *send)
 {
 	int		return_value;
 	char	*pointer_value;
 
-	if (str[index] == 'c' || str[index] == '%')
+	if (str[send[0]] == 'c' || str[send[0]] == '%')
 	{
-		if (str[index] == 'c')
+		if (str[send[0]] == 'c')
 			return_value = va_arg(arguments, int);
 		else
 			return_value = '%';
-		ft_putchar_fd(return_value, 1);
+		send[1] += ft_putchar(return_value);
 	}
-	else if (str[index] == 's')
+	else if (str[send[0]] == 's')
 	{
 		pointer_value = va_arg(arguments, char *);
-		ft_putstr_fd(pointer_value, 1);
-	}
-	else if (str[index] == 'i' || str[index] == 'd')
-	{
-		return_value = va_arg(arguments, int);
-		ft_putnbr_fd(return_value, 1);
+		send[1] += ft_putstr(pointer_value);
 	}
 	else
-		index = ft_switch2(str, index, arguments);
-	return (index);
+		send = ft_switch2(str, arguments, send);
+	return (send);
 }

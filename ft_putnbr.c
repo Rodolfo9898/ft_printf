@@ -6,11 +6,22 @@
 /*   By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/21 15:35:13 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/29 15:50:26 by rperez-t         ###   ########.fr       */
+/*   Updated: 2023/11/29 22:22:47 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
+
+int	ft_putnbr(int n)
+{
+	int		count;
+	char	*num;
+
+	num = ft_itoa(n);
+	count = ft_putstr(num);
+	free(num);
+	return (count);
+}
 
 void	ft_putnbr_fd(int n, int fd)
 {
