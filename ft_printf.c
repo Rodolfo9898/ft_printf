@@ -6,41 +6,22 @@
 /*   By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/28 11:09:20 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/29 13:17:17 by rperez-t         ###   ########.fr       */
+/*   Updated: 2023/11/29 15:12:17 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_print.h"
+#include <stdio.h>
 
+//void Myprintf(char* format,...);
 void	ft_printf(char *formatter, ...);
+//char *convert(unsigned int num, int base);
 
 int	main(void)
 {
-	ft_printf(" WWW.FIRMCODES.COM %sthrekjshdfrk %c\n%i", "HEY", '1', -213678);
+	//Myprintf("WWW.FIRMCODES.COM\n%s\nthrekjshdfrk\n%c\n%x\n%X\n%%\n%d", "HEY", '1', 15, -15,-5);
+	ft_printf("WWW.FIRMCODES.COM\n%s\nthrekjshdfrk\n%c\n%x\n%X\n%%\n%d", "HEY", '1', 15, -15,-5);
 	return (0);
-}
-
-int	ft_switch(char *str, int index, va_list arguments)
-{
-	int		return_value;
-	char	*pointer_value;
-
-	if (str[index] == 'c')
-	{
-		return_value = va_arg(arguments, int);
-		ft_putchar_fd(return_value, 1);
-	}
-	else if (str[index] == 's')
-	{
-		pointer_value = va_arg(arguments, char *);
-		ft_putstr_fd(pointer_value, 1);
-	}
-	else if (str[index] == 'i' || str[index] == 'd')
-	{
-		return_value = va_arg(arguments, int);
-		ft_putnbr_fd(return_value, 1);
-	}
-	return (index);
 }
 
 void	ft_printf(char *formatter, ...)
@@ -116,20 +97,24 @@ void Myprintf(char* format,...)
     va_end(arg); 
 } 
 
-char *convert(unsigned int num, int base) 
-{ 
-    static char Representation[]= "0123456789ABCDEF";
-    static char buffer[50]; 
-    char *ptr; 
+char	*convert(unsigned int num, int lowercase)
+{
+	static char	rep[] = "0123456789ABCDEF";
+	static char	buffer[50];
+    char		*ptr;
 
-    ptr = &buffer[49]; 
-    *ptr = '\0'; 
-
-    do 
-    { 
-        *--ptr = Representation[num%base]; 
-        num /= base; 
-    }while(num != 0); 
-
-    return(ptr); 
-}*/
+    ptr = &buffer[49];
+    *ptr = '\0';
+    if (num == 0)
+		*--ptr = rep[0];
+	else
+	{
+		while (num != 0)
+		{
+			*--ptr = rep[num % 16];
+			num /= 16;
+		}
+	}
+	return (ptr);
+}
+*/

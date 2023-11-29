@@ -12,15 +12,10 @@
 
 NAME		= libftprintf.a
 
-SRCS		= ft_putchar_fd.c ft_putnbr_fd.c ft_putstr_fd.c ft_printf.c
+SRCS		= ft_putchar_fd.c ft_putnbr_fd.c ft_putstr_fd.c ft_make_hex.c\
+			  ft_switcher.c ft_printf.c
 
-#BONUS_SRCS	= ft_lstnew.c ft_lstadd_front.c ft_lstsize.c ft_lstlast.c \
-			  ft_lstadd_back.c ft_lstdelone.c ft_lstclear.c ft_lstiter.c \
-			  ft_lstmap.c
-				
 OBJS		= ${SRCS:.c=.o}
-
-#BONUS_OBJS	= ${BONUS_SRCS:.c=.o}
 
 FLAGS		= -Wall -Werror -Wextra
 
@@ -32,10 +27,6 @@ ${NAME}: ${OBJS}
 
 .c.o:
 		cc ${FLAGS} -I ./ -c $< -o ${<:.c=.o}
-
-#bonus: ${NAME}
-#	cc ${FLAGS} -c ${BONUS_SRCS} -I ./
-#	ar rc ${NAME} ${BONUS_OBJS}
 
 clean:
 	rm -f ${OBJS} ${BONUS_OBJS}
