@@ -6,7 +6,7 @@
 /*   By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/28 11:09:20 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/30 14:53:42 by rperez-t         ###   ########.fr       */
+/*   Updated: 2023/11/30 15:14:06 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int	ft_printf(const char *format, ...)
 #include <limits.h>
 int	main(void)
 {
-	printf("%i\n\n",ft_printf("%"));
-	printf("%i\n\n",printf("%"));
+	printf("%i\n\n",ft_printf("asdfghjkl\n"));
+	printf("%i\n\n",printf("asdfghjkl\n"));
 	return (0);
 }*/
