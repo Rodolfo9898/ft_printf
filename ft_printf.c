@@ -6,7 +6,7 @@
 /*   By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/28 11:09:20 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/30 13:08:49 by rperez-t         ###   ########.fr       */
+/*   Updated: 2023/11/30 14:53:42 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int	ft_printf(const char *format, ...)
 	return (send[1]);
 }
 
-
+/*
 #include <stdio.h> 
 #include <limits.h>
 int	main(void)
@@ -46,4 +46,4 @@ int	main(void)
 	printf("%i\n\n",ft_printf("%"));
 	printf("%i\n\n",printf("%"));
 	return (0);
-}
+}*/
