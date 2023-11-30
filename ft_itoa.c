@@ -6,7 +6,7 @@
 /*   By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/21 15:15:56 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/29 22:21:54 by rperez-t         ###   ########.fr       */
+/*   Updated: 2023/11/30 08:39:47 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	num_digit(long num)
 	return (digits);
 }
 
-char	*ft_itoa(int n)
+char	*ft_itoa(long n)
 {
 	long	len;
 	long	nl;
