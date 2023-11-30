@@ -6,19 +6,19 @@
 /*   By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 14:45:09 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/29 15:50:36 by rperez-t         ###   ########.fr       */
+/*   Updated: 2023/11/30 12:40:15 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-char	*ft_make_hex(unsigned int num, int lowercase)
+char	*ft_make_hex(unsigned long num, int lowercase)
 {
 	static char	rep[] = "0123456789ABCDEF";
-	static char	buffer[50];
+	static char	buffer[100];
 	char		*ptr;
 
-	ptr = &buffer[49];
+	ptr = &buffer[99];
 	*ptr = '\0';
 	if (num == 0)
 		*--ptr = rep[0];

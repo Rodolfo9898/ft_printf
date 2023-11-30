@@ -6,13 +6,13 @@
 /*   By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/21 15:15:56 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/30 08:39:47 by rperez-t         ###   ########.fr       */
+/*   Updated: 2023/11/30 11:58:39 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	num_digit(long num)
+int	num_digit(long num, int base)
 {
 	int	digits;
 
@@ -23,7 +23,7 @@ int	num_digit(long num)
 		digits++;
 	while (num != 0)
 	{
-		num = num / 10;
+		num = num / base;
 		digits++;
 	}
 	return (digits);
@@ -35,7 +35,7 @@ char	*ft_itoa(long n)
 	long	nl;
 	char	*result;
 
-	len = num_digit(n);
+	len = num_digit(n, 10);
 	nl = n;
 	if (n < 0)
 		nl *= -1;

@@ -12,8 +12,7 @@
 
 NAME		= libftprintf.a
 
-SRCS		= ft_itoa.c ft_make_hex.c ft_process_print.c\
-			  ft_switcher.c ft_printf.c
+SRCS		= ft_itoa.c ft_make_hex.c ft_process_print.c ft_switcher.c ft_printf.c
 
 OBJS		= ${SRCS:.c=.o}
 

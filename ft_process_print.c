@@ -6,7 +6,7 @@
 /*   By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 08:54:25 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/30 08:57:57 by rperez-t         ###   ########.fr       */
+/*   Updated: 2023/11/30 12:33:49 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,5 +52,25 @@ int	ft_putunbr(unsigned int n)
 	num = ft_itoa(n);
 	count = ft_putstr(num);
 	free(num);
+	return (count);
+}
+
+int	ft_putptr(uintptr_t p)
+{
+	int		count;
+	char	*address;
+
+	count = 0;
+	if (!p)
+	{
+		count += ft_putstr("(nil)");
+	}
+	else
+	{
+		count += ft_putchar('0');
+		count += ft_putchar('x');
+		address = ft_make_hex(p, 1);
+		count += ft_putstr(address);
+	}
 	return (count);
 }
