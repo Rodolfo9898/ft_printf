@@ -6,7 +6,7 @@
 /*   By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/28 11:09:20 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/29 21:39:37 by rperez-t         ###   ########.fr       */
+/*   Updated: 2023/11/30 08:46:53 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,10 @@ int	ft_printf(const char *format, ...)
 	return (send[1]);
 }
 /*
+#include<stdio.h> 
 int	main(void)
 {
-	ft_printf("TesTing out\n%s\n%c\n%x\n%X\n%%\n%d", "HEY", '1', 15, -15, -5);
+	printf("%i\n\n",ft_printf("TesTing out\n%d\n%u\n", -15, -5));
+	printf("%i\n\n",printf("TesTing out\n%d\n%u\n", -15, -5));
 	return (0);
 }*/
