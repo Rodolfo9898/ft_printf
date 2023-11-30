@@ -6,7 +6,7 @@
 /*   By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 14:35:36 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/29 22:20:50 by rperez-t         ###   ########.fr       */
+/*   Updated: 2023/11/30 08:04:31 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	*ft_switch2(const char *str, va_list arguments, int *send)
 			pointer_value = ft_make_hex(return_value, 1);
 		else
 			pointer_value = ft_make_hex(return_value, 0);
-		ft_putstr_fd(pointer_value, 1);
+		send[1] += ft_putstr(pointer_value);
 	}
 	return (send);
 }

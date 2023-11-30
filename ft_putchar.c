@@ -6,7 +6,7 @@
 /*   By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/21 15:32:46 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/29 20:34:19 by rperez-t         ###   ########.fr       */
+/*   Updated: 2023/11/30 08:07:07 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,4 @@ int	ft_putchar(int c)
 {
 	write(1, &c, 1);
 	return (1);
-}
-
-void	ft_putchar_fd(char c, int fd)
-{
-	write(fd, &c, 1);
 }
