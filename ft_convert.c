@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_itoa.c                                          :+:      :+:    :+:   */
+/*   ft_convert.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+        */
+/*   By: rperez-t <rperez-t@student.42belgium.be>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/21 15:15:56 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/30 11:58:39 by rperez-t         ###   ########.fr       */
+/*   Updated: 2026/10/30 16:18:32 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	num_digit(long num, int base)
+static int	num_digit(long num, int base)
 {
 	int	digits;
 
@@ -56,4 +56,28 @@ char	*ft_itoa(long n)
 			result[len] = '-';
 	}
 	return (result);
+}
+
+char	*ft_make_hex(unsigned long num, int lowercase)
+{
+	static char	rep[] = "0123456789ABCDEF";
+	static char	buffer[100];
+	char		*ptr;
+
+	ptr = &buffer[99];
+	*ptr = '\0';
+	if (num == 0)
+		*--ptr = rep[0];
+	else
+	{
+		while (num != 0)
+		{
+			if (lowercase && 9 < num % 16)
+				*--ptr = rep[num % 16] + 32;
+			else
+				*--ptr = rep[num % 16];
+			num /= 16;
+		}
+	}
+	return (ptr);
 }

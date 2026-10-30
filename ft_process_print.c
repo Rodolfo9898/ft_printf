@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_process_print.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+        */
+/*   By: rperez-t <rperez-t@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 08:54:25 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/30 12:33:49 by rperez-t         ###   ########.fr       */
+/*   Updated: 2026/10/30 17:19:05 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,11 @@
 
 int	ft_putchar(int c)
 {
-	write(1, &c, 1);
+	char	character;
+
+	character = c;
+	if (write(1, &character, 1) != 1)
+		return (-1);
 	return (1);
 }
 
@@ -24,12 +28,13 @@ int	ft_putstr(char *s)
 
 	i = 0;
 	if (!s)
-	{
-		write(1, "(null)", 6);
-		return (6);
-	}
+		return (ft_putstr("(null)"));
 	while (s[i])
-		i += ft_putchar(s[i]);
+	{
+		if (ft_putchar(s[i]) < 0)
+			return (-1);
+		i++;
+	}
 	return (i);
 }
 
@@ -39,6 +44,8 @@ int	ft_putnbr(int n)
 	char	*num;
 
 	num = ft_itoa(n);
+	if (!num)
+		return (-1);
 	count = ft_putstr(num);
 	free(num);
 	return (count);
@@ -50,6 +57,8 @@ int	ft_putunbr(unsigned int n)
 	char	*num;
 
 	num = ft_itoa(n);
+	if (!num)
+		return (-1);
 	count = ft_putstr(num);
 	free(num);
 	return (count);
@@ -60,17 +69,13 @@ int	ft_putptr(uintptr_t p)
 	int		count;
 	char	*address;
 
-	count = 0;
 	if (!p)
-	{
-		count += ft_putstr("(nil)");
-	}
-	else
-	{
-		count += ft_putchar('0');
-		count += ft_putchar('x');
-		address = ft_make_hex(p, 1);
-		count += ft_putstr(address);
-	}
-	return (count);
+		return (ft_putstr("(nil)"));
+	if (ft_putchar('0') < 0 || ft_putchar('x') < 0)
+		return (-1);
+	address = ft_make_hex(p, 1);
+	count = ft_putstr(address);
+	if (count < 0)
+		return (-1);
+	return (count + 2);
 }

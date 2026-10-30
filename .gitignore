@@ -1,0 +1,13 @@
+# Build output
+*.o
+*.a
+*.out
+a.out
+
+# Editor / OS files
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+verdict.md

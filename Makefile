@@ -3,36 +3,36 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+         #
+#    By: rperez-t <rperez-t@student.42belgium.be>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/23 14:34:39 by rperez-t          #+#    #+#              #
-#    Updated: 2023/11/28 18:35:18 by rperez-t         ###   ########.fr        #
+#    Updated: 2026/10/30 16:18:32 by rperez-t         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= libftprintf.a
 
-SRCS		= ft_itoa.c ft_make_hex.c ft_process_print.c ft_switcher.c ft_printf.c
+SRCS		= ft_convert.c ft_process_print.c ft_switcher.c ft_printf.c
 
 OBJS		= ${SRCS:.c=.o}
 
-FLAGS		= -Wall -Werror -Wextra
+CC			= cc
+CFLAGS		= -Wall -Werror -Wextra
 
 all: ${NAME}
 
 ${NAME}: ${OBJS}
-	cc ${FLAGS} -c ${SRCS} -I ./
-	ar rc ${NAME} ${OBJS}
+	ar rcs ${NAME} ${OBJS}
 
-.c.o:
-		cc ${FLAGS} -I ./ -c $< -o ${<:.c=.o}
+%.o: %.c ft_printf.h
+	${CC} ${CFLAGS} -I . -c $< -o $@
 
 clean:
-	rm -f ${OBJS} ${BONUS_OBJS}
+	rm -f ${OBJS}
 
 fclean: clean
 	rm -f ${NAME}
 
 re: fclean all
 
-.PHONY: all clean fclean bonus
+.PHONY: all clean fclean re

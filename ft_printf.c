@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rperez-t <rperez-t@student.s19.be>         +#+  +:+       +#+        */
+/*   By: rperez-t <rperez-t@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/28 11:09:20 by rperez-t          #+#    #+#             */
-/*   Updated: 2023/11/30 15:14:06 by rperez-t         ###   ########.fr       */
+/*   Updated: 2026/10/30 16:20:18 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,35 +15,28 @@
 int	ft_printf(const char *format, ...)
 {
 	int		*ret;
-	int		send[2];
+	int		send[3];
 	va_list	arguments;
 
 	va_start(arguments, format);
 	send[0] = 0;
 	send[1] = 0;
-	while (format[send[0]] != '\0')
+	send[2] = 0;
+	while (send[2] == 0 && format[send[0]] != '\0')
 	{
 		if (format[send[0]] != '%')
-			send[1] += ft_putchar(format[send[0]]);
+			ft_add_count(send, ft_putchar(format[send[0]]));
 		else
 		{
 			send[0]++;
-			ret = ft_switch(format, arguments, send);
+			ret = ft_checker_text(format, &arguments, send);
 			send[0] = ret[0];
 			send[1] = ret[1];
 		}
 		send[0]++;
 	}
 	va_end(arguments);
+	if (send[2])
+		return (-1);
 	return (send[1]);
 }
-
-/*
-#include <stdio.h> 
-#include <limits.h>
-int	main(void)
-{
-	printf("%i\n\n",ft_printf("asdfghjkl\n"));
-	printf("%i\n\n",printf("asdfghjkl\n"));
-	return (0);
-}*/
