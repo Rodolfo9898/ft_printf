@@ -6,7 +6,7 @@
 /*   By: rperez-t <rperez-t@student.42belgium.be>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 14:35:36 by rperez-t          #+#    #+#             */
-/*   Updated: 2026/11/03 09:25:55 by rperez-t         ###   ########.fr       */
+/*   Updated: 2026/11/03 10:01:45 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,18 +20,11 @@ void	ft_add_count(t_state *state, int written)
 		state->count += written;
 }
 
-static int	ft_is_specifier(char c)
+static int	ft_print_unknown(char specifier)
 {
-	const char	*specifiers;
-
-	specifiers = "cspdiuxX%";
-	while (*specifiers)
-	{
-		if (*specifiers == c)
-			return (1);
-		specifiers++;
-	}
-	return (0);
+	if (ft_putchar('%') < 0 || ft_putchar(specifier) < 0)
+		return (-1);
+	return (2);
 }
 
 static int	ft_print_conversion(char specifier, va_list *arguments)
@@ -50,7 +43,9 @@ static int	ft_print_conversion(char specifier, va_list *arguments)
 		return (ft_putnbr_base(va_arg(*arguments, unsigned int), HEX_LOWER));
 	if (specifier == 'X')
 		return (ft_putnbr_base(va_arg(*arguments, unsigned int), HEX_UPPER));
-	return (ft_putchar('%'));
+	if (specifier == '%')
+		return (ft_putchar('%'));
+	return (ft_print_unknown(specifier));
 }
 
 void	ft_dispatch(const char *format, va_list *arguments, t_state *state)
@@ -60,12 +55,6 @@ void	ft_dispatch(const char *format, va_list *arguments, t_state *state)
 	specifier = format[state->pos];
 	if (specifier == '\0')
 		state->error = 1;
-	else if (ft_is_specifier(specifier))
-		ft_add_count(state, ft_print_conversion(specifier, arguments));
 	else
-	{
-		ft_add_count(state, ft_putchar('%'));
-		if (!state->error)
-			ft_add_count(state, ft_putchar(specifier));
-	}
+		ft_add_count(state, ft_print_conversion(specifier, arguments));
 }

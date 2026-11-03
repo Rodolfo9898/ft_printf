@@ -6,7 +6,7 @@
 /*   By: rperez-t <rperez-t@student.42belgium.be>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 08:54:25 by rperez-t          #+#    #+#             */
-/*   Updated: 2026/11/03 09:25:55 by rperez-t         ###   ########.fr       */
+/*   Updated: 2026/11/03 10:01:45 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,22 +40,23 @@ int	ft_putstr(const char *s)
 
 int	ft_putnbr_base(uintmax_t number, const char *base)
 {
+	char		digits[MAX_DIGITS];
 	uintmax_t	base_length;
-	int			count;
+	int			length;
 
 	base_length = 0;
 	while (base[base_length])
 		base_length++;
-	count = 0;
-	if (number >= base_length)
+	length = 0;
+	while (length == 0 || number > 0)
 	{
-		count = ft_putnbr_base(number / base_length, base);
-		if (count < 0)
-			return (-1);
+		length++;
+		digits[MAX_DIGITS - length] = base[number % base_length];
+		number /= base_length;
 	}
-	if (ft_putchar(base[number % base_length]) < 0)
+	if (write(1, digits + MAX_DIGITS - length, length) != length)
 		return (-1);
-	return (count + 1);
+	return (length);
 }
 
 int	ft_putnbr(int number)

@@ -22,8 +22,8 @@ Supported conversions:
 
 Flags, field width and precision are not supported (they belong to the bonus
 part, which was not done). An unknown specifier such as `%y` is printed as is,
-as glibc does, and a `%` at the very end of the format makes the call return
-`-1`.
+as glibc does. A `%` at the very end of the format, or a `NULL` format, makes
+the call return `-1`.
 
 ## Instructions
 
@@ -52,53 +52,73 @@ cc -Wall -Wextra -Werror main.c -I. -L. -lftprintf
 
 ## Algorithm and data structure
 
-**The `send` array: the whole state in three ints.** `ft_printf`
-(`ft_printf.c`) keeps its state in one small array that it passes around:
+**State: one small struct.** `ft_printf` (`ft_printf.c`) keeps all of its
+state in a `t_state` (`ft_printf.h`) and passes a pointer to it around:
 
-| Slot | Meaning |
+| Field | Meaning |
 |---|---|
-| `send[0]` | current position in the format string |
-| `send[1]` | number of characters printed so far |
-| `send[2]` | error flag: a `write` or `malloc` failed, or the format ends in `%` |
+| `pos` | index of the current character in the format string |
+| `count` | number of characters printed so far, i.e. the return value |
+| `error` | set when a `write` fails, when `count` would overflow `INT_MAX`, or when the format ends in `%` |
 
-The format is walked once. Ordinary characters are printed immediately. On a
-`%`, the position moves to the specifier and the array is handed to
-`ft_checker_text`, which updates the count and gives the array back. Passing
-one pointer instead of separate variables lets every function in the chain
-read the position and update the count without extra parameters. The error flag
+These three values always travel together, so a struct with named fields is
+clearer than separate variables, and one pointer lets the dispatcher read the
+position and update the count while staying within the Norm's limit of four
+parameters.
+
+**One pass over the format.** The loop in `ft_printf` stops at the `'\0'` or
+as soon as `error` is set. Ordinary characters are printed straight away. On a
+`%`, `pos` moves to the specifier and `ft_dispatch` takes over. The error flag
 is tested before the next character is read, so a `%` at the very end can
-never make the loop read past the `'\0'`.
+never make the loop read past the `'\0'`. A `NULL` format returns `-1` at
+once, as glibc does.
 
-**Dispatch as a chain of three checkers** (`ft_switcher.c`).
-Each checker is named after the kind of conversion it looks for:
-`ft_checker_text` handles `%c`, `%%` and `%s`, and passes anything else on to
-`ft_checker_decimal` (`%d`, `%i`, `%u`), which passes the rest on to
-`ft_checker_hex` (`%x`, `%X`, `%p`, then the end of the string or an unknown
-specifier). Grouping the conversions by kind keeps each function small and
-within the Norm's 25 lines. Every printed amount goes
-through `ft_add_count`, which either adds it to `send[1]` or, if it is `-1`,
-raises `send[2]`.
+**Dispatch** (`ft_switcher.c`). `ft_dispatch` flags a `'\0'` after `%` as an
+error and hands every other specifier to `ft_print_conversion`: an `if` chain
+with one branch per conversion, each reading its argument with the right type
+(`int` for `%c`, `%d` and `%i`, because `char` is promoted to `int` when it is
+passed through `...`; `unsigned int` for `%u`, `%x` and `%X`; `char *` for
+`%s`; `void *` for `%p`). `%%` has its own branch. Any other character goes to
+`ft_print_unknown`, which prints `%` and the character unchanged and consumes
+no argument. This chain is the only list of supported specifiers. A table of
+function pointers was not used: every conversion reads a different argument
+type, so each entry would need its own wrapper, and for nine cases the chain
+is shorter and easier to follow.
+Every printer returns the number of characters it wrote, or `-1`.
+`ft_add_count` adds that number to `count`, or sets `error` if the number is
+`-1` or the total would go past `INT_MAX`.
 
 The `va_list` travels down the chain **by pointer**: the C standard leaves a
 `va_list` indeterminate in the caller once a callee has used `va_arg` on a
 copy, and on arm64 such a copy never advances, so every conversion would read
 the first argument again.
 
-**No output buffer.** Output goes straight to `write(2)`, not to a buffer.
-That keeps the code small and makes ordering with other `write` calls
-predictable, at the cost of one system call per plain character. The real
-`printf` buffers instead, which is faster but needs flushing logic.
+**Numbers: one base-conversion routine** (`ft_print_utils.c`).
+`ft_putnbr_base(number, base)` prints `%u` (base `DECIMAL`), `%x`
+(`HEX_LOWER`), `%X` (`HEX_UPPER`) and the digits of `%p`. `%d`/`%i` go through
+`ft_putnbr`, which prints the `-` itself and then hands the magnitude to the
+same routine. Choices:
+- The base is passed as its digit string, so its length is the radix and one
+  function covers every base. The length is computed once per number.
+- `number` is a `uintmax_t`, which holds every `unsigned int` and every
+  pointer (`uintptr_t`), so no conversion can overflow.
+- `ft_putnbr` copies the `int` into a `long` before negating it, so
+  `-INT_MIN` does not overflow.
+- Digits are produced least significant first, from right to left, into a
+  local buffer of `MAX_DIGITS` (64) bytes, which is enough for any
+  `uintmax_t` even in base 2. The number is then printed with a single
+  `write`. The buffer lives on the stack, so nothing is allocated and nothing
+  can leak or fail, and no state is kept from one call to the next.
 
-**Numbers.**
-- Decimal (`%d`, `%i`, `%u`) goes through `ft_itoa`, which takes a `long` so
-  that both `INT_MIN` and `UINT_MAX` fit without overflow. It returns a heap
-  string that `ft_putnbr` / `ft_putunbr` free right after printing.
-- Hexadecimal (`%x`, `%X`, `%p`) is built by `ft_make_hex` from right to left
-  in a static buffer, using a single uppercase digit table: for lowercase, the
-  letters `A`–`F` are shifted by 32, which is exactly the distance between
-  upper- and lowercase in ASCII. The static buffer means no allocation, so
-  nothing can fail or leak. The trade-off is that the result is overwritten
-  on the next call, which is fine because it is printed immediately.
+`%s` with `NULL` prints `(null)`, and `%p` with `NULL` prints `NULL_PTR_STR`:
+`(nil)` on Linux and `0x0` on macOS, matching each platform's own `printf`.
+
+**No output buffer.** The subject forbids reimplementing `printf`'s buffer
+management, so output goes straight to `write(2)`: one system call per plain
+character, one per string character, and one per number. This keeps the
+ordering with other `write` calls predictable, and a failed `write` is seen
+at once, so `ft_printf` returns `-1` immediately instead of failing later at
+flush time.
 
 ## Resources
 
@@ -109,5 +129,8 @@ predictable, at the cost of one system call per plain character. The real
 
 **Use of AI.** An AI assistant (Claude) was used to review the project, to
 find the `va_list` portability bug and the missing error handling, to patch
-them inside the existing design, and to draft this README. All changes were
+them inside the existing design, and to draft this README. After the
+restructuring, it was also used to handle a `NULL` format, to make `%%`
+explicit in the dispatch, to print numbers from a local buffer, and to
+rewrite the algorithm section above to match the code. All changes were
 tested against the system `printf`.

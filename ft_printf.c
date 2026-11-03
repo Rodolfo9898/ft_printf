@@ -6,7 +6,7 @@
 /*   By: rperez-t <rperez-t@student.42belgium.be>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/28 11:09:20 by rperez-t          #+#    #+#             */
-/*   Updated: 2026/11/03 09:25:55 by rperez-t         ###   ########.fr       */
+/*   Updated: 2026/11/03 10:01:45 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ int	ft_printf(const char *format, ...)
 	t_state	state;
 	va_list	arguments;
 
+	if (!format)
+		return (-1);
 	va_start(arguments, format);
 	state.pos = 0;
 	state.count = 0;
