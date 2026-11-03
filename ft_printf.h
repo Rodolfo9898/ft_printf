@@ -6,7 +6,7 @@
 /*   By: rperez-t <rperez-t@student.42belgium.be>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/21 08:47:13 by rperez-t          #+#    #+#             */
-/*   Updated: 2026/11/03 10:45:24 by rperez-t         ###   ########.fr       */
+/*   Updated: 2026/11/03 11:02:57 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,6 @@
 # define DECIMAL "0123456789"
 # define HEX_LOWER "0123456789abcdef"
 # define HEX_UPPER "0123456789ABCDEF"
-
-/* Digits of the largest uintmax_t (64 bits) in the smallest base, 2. */
-# define MAX_DIGITS 64
 
 typedef struct s_state
 {

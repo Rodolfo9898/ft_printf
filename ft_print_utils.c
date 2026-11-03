@@ -6,7 +6,7 @@
 /*   By: rperez-t <rperez-t@student.42belgium.be>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 08:54:25 by rperez-t          #+#    #+#             */
-/*   Updated: 2026/11/03 10:45:24 by rperez-t         ###   ########.fr       */
+/*   Updated: 2026/11/03 11:02:57 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ int	pf_putchar(int c)
 int	pf_putstr(const char *s)
 {
 	size_t	length;
+	size_t	done;
+	ssize_t	written;
 
 	if (!s)
 		return (pf_putstr("(null)"));
@@ -34,14 +36,21 @@ int	pf_putstr(const char *s)
 		length++;
 	if (length > INT_MAX)
 		return (-1);
-	if (write(1, s, length) != (ssize_t)length)
-		return (-1);
+	done = 0;
+	while (done < length)
+	{
+		written = write(1, s + done, length - done);
+		if (written <= 0)
+			return (-1);
+		done += written;
+	}
 	return ((int)length);
 }
 
+/* Base 2 needs the most digits: one per bit of a uintmax_t. */
 int	pf_putnbr_base(uintmax_t number, const char *base)
 {
-	char		digits[MAX_DIGITS];
+	char		digits[sizeof(uintmax_t) * CHAR_BIT];
 	uintmax_t	base_length;
 	int			length;
 
@@ -54,10 +63,10 @@ int	pf_putnbr_base(uintmax_t number, const char *base)
 	while (length == 0 || number > 0)
 	{
 		length++;
-		digits[MAX_DIGITS - length] = base[number % base_length];
+		digits[sizeof(digits) - length] = base[number % base_length];
 		number /= base_length;
 	}
-	if (write(1, digits + MAX_DIGITS - length, length) != length)
+	if (write(1, digits + sizeof(digits) - length, length) != length)
 		return (-1);
 	return (length);
 }
