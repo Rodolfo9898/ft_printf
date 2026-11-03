@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_process_print.c                                 :+:      :+:    :+:   */
+/*   ft_print_utils.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rperez-t <rperez-t@student.42belgium.be>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -22,7 +22,7 @@ int	ft_putchar(int c)
 	return (1);
 }
 
-int	ft_putstr(char *s)
+int	ft_putstr(const char *s)
 {
 	int	i;
 
@@ -38,43 +38,56 @@ int	ft_putstr(char *s)
 	return (i);
 }
 
-int	ft_putnbr(int n)
+int	ft_putnbr_base(uintmax_t number, const char *base)
 {
-	int		count;
-	char	*num;
+	uintmax_t	base_length;
+	int			count;
 
-	num = ft_itoa(n);
-	if (!num)
+	base_length = 0;
+	while (base[base_length])
+		base_length++;
+	count = 0;
+	if (number >= base_length)
+	{
+		count = ft_putnbr_base(number / base_length, base);
+		if (count < 0)
+			return (-1);
+	}
+	if (ft_putchar(base[number % base_length]) < 0)
 		return (-1);
-	count = ft_putstr(num);
-	free(num);
-	return (count);
+	return (count + 1);
 }
 
-int	ft_putunbr(unsigned int n)
+int	ft_putnbr(int number)
 {
+	long	value;
 	int		count;
-	char	*num;
+	int		written;
 
-	num = ft_itoa(n);
-	if (!num)
+	value = number;
+	count = 0;
+	if (value < 0)
+	{
+		if (ft_putchar('-') < 0)
+			return (-1);
+		value = -value;
+		count = 1;
+	}
+	written = ft_putnbr_base(value, DECIMAL);
+	if (written < 0)
 		return (-1);
-	count = ft_putstr(num);
-	free(num);
-	return (count);
+	return (count + written);
 }
 
-int	ft_putptr(uintptr_t p)
+int	ft_putptr(void *p)
 {
-	int		count;
-	char	*address;
+	int	count;
 
 	if (!p)
-		return (ft_putstr("(nil)"));
-	if (ft_putchar('0') < 0 || ft_putchar('x') < 0)
+		return (ft_putstr(NULL_PTR_STR));
+	if (ft_putstr("0x") < 0)
 		return (-1);
-	address = ft_make_hex(p, 1);
-	count = ft_putstr(address);
+	count = ft_putnbr_base((uintptr_t)p, HEX_LOWER);
 	if (count < 0)
 		return (-1);
 	return (count + 2);

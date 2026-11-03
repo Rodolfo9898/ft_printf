@@ -12,81 +12,60 @@
 
 #include "ft_printf.h"
 
-void	ft_add_count(int *send, int written)
+void	ft_add_count(t_state *state, int written)
 {
-	if (written < 0)
-		send[2] = 1;
+	if (written < 0 || written > INT_MAX - state->count)
+		state->error = 1;
 	else
-		send[1] += written;
+		state->count += written;
 }
 
-static int	*ft_checker_hex(const char *str, va_list *arguments, int *send)
+static int	ft_is_specifier(char c)
 {
-	char			*pointer_value;
-	unsigned long	return_value;
+	const char	*specifiers;
 
-	if (str[send[0]] == 'X' || str[send[0]] == 'x')
+	specifiers = "cspdiuxX%";
+	while (*specifiers)
 	{
-		return_value = va_arg(*arguments, unsigned int);
-		if (str[send[0]] == 'x')
-			pointer_value = ft_make_hex(return_value, 1);
-		else
-			pointer_value = ft_make_hex(return_value, 0);
-		ft_add_count(send, ft_putstr(pointer_value));
+		if (*specifiers == c)
+			return (1);
+		specifiers++;
 	}
-	else if (str[send[0]] == 'p')
-	{
-		return_value = va_arg(*arguments, uintptr_t);
-		ft_add_count(send, ft_putptr(return_value));
-	}
-	else if (str[send[0]] == '\0')
-		send[2] = 1;
-	else
-	{
-		ft_add_count(send, ft_putchar('%'));
-		ft_add_count(send, ft_putchar(str[send[0]]));
-	}
-	return (send);
+	return (0);
 }
 
-static int	*ft_checker_decimal(const char *str, va_list *arguments, int *send)
+static int	ft_print_conversion(char specifier, va_list *arguments)
 {
-	int	return_value;
-
-	if (str[send[0]] == 'i' || str[send[0]] == 'd')
-	{
-		return_value = va_arg(*arguments, int);
-		ft_add_count(send, ft_putnbr(return_value));
-	}
-	else if (str[send[0]] == 'u')
-	{
-		return_value = va_arg(*arguments, unsigned int);
-		ft_add_count(send, ft_putunbr(return_value));
-	}
-	else
-		send = ft_checker_hex(str, arguments, send);
-	return (send);
+	if (specifier == 'c')
+		return (ft_putchar(va_arg(*arguments, int)));
+	if (specifier == 's')
+		return (ft_putstr(va_arg(*arguments, char *)));
+	if (specifier == 'p')
+		return (ft_putptr(va_arg(*arguments, void *)));
+	if (specifier == 'd' || specifier == 'i')
+		return (ft_putnbr(va_arg(*arguments, int)));
+	if (specifier == 'u')
+		return (ft_putnbr_base(va_arg(*arguments, unsigned int), DECIMAL));
+	if (specifier == 'x')
+		return (ft_putnbr_base(va_arg(*arguments, unsigned int), HEX_LOWER));
+	if (specifier == 'X')
+		return (ft_putnbr_base(va_arg(*arguments, unsigned int), HEX_UPPER));
+	return (ft_putchar('%'));
 }
 
-int	*ft_checker_text(const char *str, va_list *arguments, int *send)
+void	ft_dispatch(const char *format, va_list *arguments, t_state *state)
 {
-	int		return_value;
-	char	*pointer_value;
+	char	specifier;
 
-	if (str[send[0]] == 'c' || str[send[0]] == '%')
-	{
-		if (str[send[0]] == 'c')
-			return_value = va_arg(*arguments, int);
-		else
-			return_value = '%';
-		ft_add_count(send, ft_putchar(return_value));
-	}
-	else if (str[send[0]] == 's')
-	{
-		pointer_value = va_arg(*arguments, char *);
-		ft_add_count(send, ft_putstr(pointer_value));
-	}
+	specifier = format[state->pos];
+	if (specifier == '\0')
+		state->error = 1;
+	else if (ft_is_specifier(specifier))
+		ft_add_count(state, ft_print_conversion(specifier, arguments));
 	else
-		send = ft_checker_decimal(str, arguments, send);
-	return (send);
+	{
+		ft_add_count(state, ft_putchar('%'));
+		if (!state->error)
+			ft_add_count(state, ft_putchar(specifier));
+	}
 }

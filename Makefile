@@ -12,7 +12,7 @@
 
 NAME		= libftprintf.a
 
-SRCS		= ft_convert.c ft_process_print.c ft_switcher.c ft_printf.c
+SRCS		= ft_print_utils.c ft_switcher.c ft_printf.c
 
 OBJS		= ${SRCS:.c=.o}
 

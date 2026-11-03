@@ -14,29 +14,26 @@
 
 int	ft_printf(const char *format, ...)
 {
-	int		*ret;
-	int		send[3];
+	t_state	state;
 	va_list	arguments;
 
 	va_start(arguments, format);
-	send[0] = 0;
-	send[1] = 0;
-	send[2] = 0;
-	while (send[2] == 0 && format[send[0]] != '\0')
+	state.pos = 0;
+	state.count = 0;
+	state.error = 0;
+	while (!state.error && format[state.pos] != '\0')
 	{
-		if (format[send[0]] != '%')
-			ft_add_count(send, ft_putchar(format[send[0]]));
-		else
+		if (format[state.pos] == '%')
 		{
-			send[0]++;
-			ret = ft_checker_text(format, &arguments, send);
-			send[0] = ret[0];
-			send[1] = ret[1];
+			state.pos++;
+			ft_dispatch(format, &arguments, &state);
 		}
-		send[0]++;
+		else
+			ft_add_count(&state, ft_putchar(format[state.pos]));
+		state.pos++;
 	}
 	va_end(arguments);
-	if (send[2])
+	if (state.error)
 		return (-1);
-	return (send[1]);
+	return (state.count);
 }
