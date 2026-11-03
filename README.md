@@ -24,11 +24,13 @@ Flags, field width and precision are not supported (they belong to the bonus
 part, which was not done). The one exception is `%%`: with flags or a width
 in between, such as `%5%`, it prints a single `%`, as glibc does. Any other
 conversion with flags, such as `%5d`, is printed as is. An unknown specifier
-such as `%y` is printed as is,
-as glibc does. A `NULL` format, or a format whose last character is a lone `%`
-(such as `"abc%"`), makes the call return `-1` **without printing anything**:
-the format is checked before the first character is written, so the output is
-never left half-done. glibc behaves the same way.
+such as `%y` is printed as is, as glibc does. A `NULL` format, or a format
+that ends in a `%`, alone or followed only by flags or a width (such as
+`"abc%"` or `"abc%5"`), makes the call return `-1` **without printing
+anything**: the format is checked before the first character is written, so a
+bad format never leaves the output half-done. glibc behaves the same way. A
+`write` that fails partway through a valid format can still leave partial
+output (see *No output buffer* below).
 
 ## Instructions
 
@@ -75,8 +77,10 @@ four parameters.
 at once, as glibc does. Otherwise `pf_format_is_valid` first scans the format
 without printing, skipping each `%` together with the character after it, or
 a whole `%%` with flags or a width in between, such as `%5%` (measured by
-`pf_flagged_percent_length`). If a `%` is the last character, `ft_printf` returns `-1` before anything is
-written. Without this check, `"abc%"` would print `abc` and only then fail,
+`pf_flagged_percent_length`). If a `%` is the last character, or is followed
+only by flags or a width up to the end (counted by `pf_flags_length`),
+`ft_printf` returns `-1` before anything is written. Without this check,
+`"abc%"` would print `abc` and only then fail,
 which differs from glibc and leaves the caller with output it cannot undo. The
 check costs one extra pass over the format, which is cheap next to the
 `write` calls.
@@ -130,8 +134,9 @@ same routine. Choices:
   stays correct wherever `uintmax_t` is wider. It is written in the
   declaration rather than as a `#define`, because the Norm only allows
   literal values in a `#define`. The number is then printed with a single
-  call to `pf_write_all`. The buffer lives on the stack, so nothing is allocated and nothing
-  can leak or fail, and no state is kept from one call to the next.
+  call to `pf_write_all`. The buffer lives on the stack, so nothing is
+  allocated and nothing can leak or fail, and no state is kept from one call
+  to the next.
 
 `%s` with `NULL` prints `(null)`, and `%p` with `NULL` prints `NULL_PTR_STR`:
 `(nil)` on Linux and `0x0` on macOS, matching each platform's own `printf`.
