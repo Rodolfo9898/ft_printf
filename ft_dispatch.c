@@ -6,7 +6,7 @@
 /*   By: rperez-t <rperez-t@student.42belgium.be>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 14:35:36 by rperez-t          #+#    #+#             */
-/*   Updated: 2026/11/03 11:41:28 by rperez-t         ###   ########.fr       */
+/*   Updated: 2026/11/03 11:56:22 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static int	pf_print_unknown(char specifier)
 	return (2);
 }
 
-static int	pf_print_conversion(char specifier, va_list *arguments)
+int	pf_print_conversion(char specifier, va_list *arguments)
 {
 	if (specifier == 'c')
 		return (pf_putchar(va_arg(*arguments, int)));
@@ -65,10 +65,4 @@ static int	pf_print_conversion(char specifier, va_list *arguments)
 	if (specifier == '%')
 		return (pf_putchar('%'));
 	return (pf_print_unknown(specifier));
-}
-
-/* ft_printf rejects a format ending in '%', so pos never points at '\0'. */
-void	pf_dispatch(const char *format, va_list *arguments, t_state *state)
-{
-	pf_add_count(state, pf_print_conversion(format[state->pos], arguments));
 }

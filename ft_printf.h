@@ -6,7 +6,7 @@
 /*   By: rperez-t <rperez-t@student.42belgium.be>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/21 08:47:13 by rperez-t          #+#    #+#             */
-/*   Updated: 2026/11/03 11:41:28 by rperez-t         ###   ########.fr       */
+/*   Updated: 2026/11/03 11:56:22 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int		pf_putptr(void *p);
 int		pf_putnbr(int number);
 int		pf_putnbr_base(uintmax_t number, const char *base);
 void	pf_add_count(t_state *state, int written);
-void	pf_dispatch(const char *format, va_list *arguments, t_state *state);
+int		pf_print_conversion(char specifier, va_list *arguments);
 int		ft_printf(const char *format, ...);
 
 #endif

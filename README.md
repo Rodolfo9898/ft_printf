@@ -64,9 +64,9 @@ state in a `t_state` (`ft_printf.h`) and passes a pointer to it around:
 | `error` | set when a `write` fails or when `count` would overflow `INT_MAX` |
 
 These three values always travel together, so a struct with named fields is
-clearer than separate variables, and one pointer lets the dispatcher read the
-position and update the count while staying within the Norm's limit of four
-parameters.
+clearer than separate variables, and one pointer lets `pf_print_segment` read
+the position and update the count while staying within the Norm's limit of
+four parameters.
 
 **Check first, then one pass over the format.** A `NULL` format returns `-1`
 at once, as glibc does. Otherwise `pf_format_is_valid` first scans the format
@@ -78,11 +78,13 @@ check costs one extra pass over the format, which is cheap next to the
 `write` calls.
 
 The printing loop then stops at the `'\0'` or as soon as `error` is set.
-Ordinary characters are printed straight away. On a `%`, `pos` moves to the
-specifier and `pf_dispatch` takes over. Because of the check, that specifier
-is never the `'\0'`, so the loop cannot read past the end of the format.
+Each turn, `pf_print_segment` prints one segment and moves `pos` past it: on a
+`%`, the conversion named by the next character; otherwise, all the plain text
+up to the next `%` (or the end), in a single `write`. Because of the check,
+the character after a `%` is never the `'\0'`, so `pos` cannot move past the
+end of the format.
 
-**Dispatch** (`ft_dispatch.c`). `pf_dispatch` hands the specifier to
+**Dispatch** (`ft_dispatch.c`). The specifier goes to
 `pf_print_conversion`: an `if` chain
 with one branch per conversion, each reading its argument with the right type
 (`int` for `%c`, `%d` and `%i`, because `char` is promoted to `int` when it is
@@ -130,13 +132,17 @@ same routine. Choices:
 `(nil)` on Linux and `0x0` on macOS, matching each platform's own `printf`.
 
 **No output buffer.** The subject forbids reimplementing `printf`'s buffer
-management, so output goes straight to `write(2)`: one system call per plain
-character, one per string, and one per number. `write` may write fewer bytes
-than asked (for example when a signal interrupts it on a full pipe), so every
-printer goes through `pf_write_all` (`ft_dispatch.c`). It calls `write`
-again for the rest until the whole buffer is out, and returns `-1` only if
-`write` fails or writes nothing. A buffer longer than `INT_MAX` returns `-1`,
-since its length could not be counted. This keeps the
+management, so output goes straight to `write(2)`: one system call per run
+of plain text, one per string, and one per number. Plain text needs no buffer,
+since it is already contiguous in the format string. `write` may write fewer
+bytes than asked (for example when a signal arrives after part of the data was
+written to a full pipe), so every printer goes through `pf_write_all`
+(`ft_dispatch.c`). It calls `write` again for the rest until the whole buffer
+is out, and returns `-1` if `write` fails or writes nothing. A `write`
+interrupted before writing anything fails with `EINTR` and is not retried,
+because `errno` is not among the subject's authorized functions; `ft_printf`
+then returns `-1`, as for any other failed `write`. A buffer longer than
+`INT_MAX` returns `-1`, since its length could not be counted. This keeps the
 ordering with other `write` calls predictable, and a failed `write` is seen
 at once, so `ft_printf` returns `-1` immediately instead of failing later at
 flush time.
