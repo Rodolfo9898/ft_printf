@@ -68,24 +68,24 @@ parameters.
 
 **One pass over the format.** The loop in `ft_printf` stops at the `'\0'` or
 as soon as `error` is set. Ordinary characters are printed straight away. On a
-`%`, `pos` moves to the specifier and `ft_dispatch` takes over. The error flag
+`%`, `pos` moves to the specifier and `pf_dispatch` takes over. The error flag
 is tested before the next character is read, so a `%` at the very end can
 never make the loop read past the `'\0'`. A `NULL` format returns `-1` at
 once, as glibc does.
 
-**Dispatch** (`ft_switcher.c`). `ft_dispatch` flags a `'\0'` after `%` as an
-error and hands every other specifier to `ft_print_conversion`: an `if` chain
+**Dispatch** (`ft_dispatch.c`). `pf_dispatch` flags a `'\0'` after `%` as an
+error and hands every other specifier to `pf_print_conversion`: an `if` chain
 with one branch per conversion, each reading its argument with the right type
 (`int` for `%c`, `%d` and `%i`, because `char` is promoted to `int` when it is
 passed through `...`; `unsigned int` for `%u`, `%x` and `%X`; `char *` for
 `%s`; `void *` for `%p`). `%%` has its own branch. Any other character goes to
-`ft_print_unknown`, which prints `%` and the character unchanged and consumes
+`pf_print_unknown`, which prints `%` and the character unchanged and consumes
 no argument. This chain is the only list of supported specifiers. A table of
 function pointers was not used: every conversion reads a different argument
 type, so each entry would need its own wrapper, and for nine cases the chain
 is shorter and easier to follow.
 Every printer returns the number of characters it wrote, or `-1`.
-`ft_add_count` adds that number to `count`, or sets `error` if the number is
+`pf_add_count` adds that number to `count`, or sets `error` if the number is
 `-1` or the total would go past `INT_MAX`.
 
 The `va_list` travels down the chain **by pointer**: the C standard leaves a
@@ -94,16 +94,18 @@ copy, and on arm64 such a copy never advances, so every conversion would read
 the first argument again.
 
 **Numbers: one base-conversion routine** (`ft_print_utils.c`).
-`ft_putnbr_base(number, base)` prints `%u` (base `DECIMAL`), `%x`
+`pf_putnbr_base(number, base)` prints `%u` (base `DECIMAL`), `%x`
 (`HEX_LOWER`), `%X` (`HEX_UPPER`) and the digits of `%p`. `%d`/`%i` go through
-`ft_putnbr`, which prints the `-` itself and then hands the magnitude to the
+`pf_putnbr`, which prints the `-` itself and then hands the magnitude to the
 same routine. Choices:
 - The base is passed as its digit string, so its length is the radix and one
-  function covers every base. The length is computed once per number.
+  function covers every base. The length is computed once per number, and
+  a base with fewer than two digits is rejected with `-1`.
 - `number` is a `uintmax_t`, which holds every `unsigned int` and every
   pointer (`uintptr_t`), so no conversion can overflow.
-- `ft_putnbr` copies the `int` into a `long` before negating it, so
-  `-INT_MIN` does not overflow.
+- `pf_putnbr` negates the `int` as an `unsigned int`, where negation is
+  defined for every value, so `-INT_MIN` does not overflow whatever the
+  size of `long`.
 - Digits are produced least significant first, from right to left, into a
   local buffer of `MAX_DIGITS` (64) bytes, which is enough for any
   `uintmax_t` even in base 2. The number is then printed with a single
@@ -115,7 +117,8 @@ same routine. Choices:
 
 **No output buffer.** The subject forbids reimplementing `printf`'s buffer
 management, so output goes straight to `write(2)`: one system call per plain
-character, one per string character, and one per number. This keeps the
+character, one per string, and one per number. A string longer than
+`INT_MAX` returns `-1`, since its length could not be counted. This keeps the
 ordering with other `write` calls predictable, and a failed `write` is seen
 at once, so `ft_printf` returns `-1` immediately instead of failing later at
 flush time.

@@ -6,13 +6,13 @@
 #    By: rperez-t <rperez-t@student.42belgium.be>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/23 14:34:39 by rperez-t          #+#    #+#              #
-#    Updated: 2026/11/03 10:01:45 by rperez-t         ###   ########.fr        #
+#    Updated: 2026/11/03 10:45:24 by rperez-t         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= libftprintf.a
 
-SRCS		= ft_print_utils.c ft_switcher.c ft_printf.c
+SRCS		= ft_print_utils.c ft_dispatch.c ft_printf.c
 
 OBJS		= ${SRCS:.c=.o}
 

@@ -6,13 +6,13 @@
 /*   By: rperez-t <rperez-t@student.42belgium.be>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 08:54:25 by rperez-t          #+#    #+#             */
-/*   Updated: 2026/11/03 10:01:45 by rperez-t         ###   ########.fr       */
+/*   Updated: 2026/11/03 10:45:24 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	ft_putchar(int c)
+int	pf_putchar(int c)
 {
 	char	character;
 
@@ -22,23 +22,24 @@ int	ft_putchar(int c)
 	return (1);
 }
 
-int	ft_putstr(const char *s)
+/* A string longer than INT_MAX could not be counted in the int return. */
+int	pf_putstr(const char *s)
 {
-	int	i;
+	size_t	length;
 
-	i = 0;
 	if (!s)
-		return (ft_putstr("(null)"));
-	while (s[i])
-	{
-		if (ft_putchar(s[i]) < 0)
-			return (-1);
-		i++;
-	}
-	return (i);
+		return (pf_putstr("(null)"));
+	length = 0;
+	while (s[length])
+		length++;
+	if (length > INT_MAX)
+		return (-1);
+	if (write(1, s, length) != (ssize_t)length)
+		return (-1);
+	return ((int)length);
 }
 
-int	ft_putnbr_base(uintmax_t number, const char *base)
+int	pf_putnbr_base(uintmax_t number, const char *base)
 {
 	char		digits[MAX_DIGITS];
 	uintmax_t	base_length;
@@ -47,6 +48,8 @@ int	ft_putnbr_base(uintmax_t number, const char *base)
 	base_length = 0;
 	while (base[base_length])
 		base_length++;
+	if (base_length < 2)
+		return (-1);
 	length = 0;
 	while (length == 0 || number > 0)
 	{
@@ -59,36 +62,37 @@ int	ft_putnbr_base(uintmax_t number, const char *base)
 	return (length);
 }
 
-int	ft_putnbr(int number)
+/* Negating in unsigned arithmetic is defined even for INT_MIN. */
+int	pf_putnbr(int number)
 {
-	long	value;
-	int		count;
-	int		written;
+	unsigned int	magnitude;
+	int				count;
+	int				written;
 
-	value = number;
+	magnitude = number;
 	count = 0;
-	if (value < 0)
+	if (number < 0)
 	{
-		if (ft_putchar('-') < 0)
+		if (pf_putchar('-') < 0)
 			return (-1);
-		value = -value;
+		magnitude = -magnitude;
 		count = 1;
 	}
-	written = ft_putnbr_base(value, DECIMAL);
+	written = pf_putnbr_base(magnitude, DECIMAL);
 	if (written < 0)
 		return (-1);
 	return (count + written);
 }
 
-int	ft_putptr(void *p)
+int	pf_putptr(void *p)
 {
 	int	count;
 
 	if (!p)
-		return (ft_putstr(NULL_PTR_STR));
-	if (ft_putstr("0x") < 0)
+		return (pf_putstr(NULL_PTR_STR));
+	if (pf_putstr("0x") < 0)
 		return (-1);
-	count = ft_putnbr_base((uintptr_t)p, HEX_LOWER);
+	count = pf_putnbr_base((uintptr_t)p, HEX_LOWER);
 	if (count < 0)
 		return (-1);
 	return (count + 2);

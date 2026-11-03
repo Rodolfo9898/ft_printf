@@ -6,7 +6,7 @@
 /*   By: rperez-t <rperez-t@student.42belgium.be>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/28 11:09:20 by rperez-t          #+#    #+#             */
-/*   Updated: 2026/11/03 10:01:45 by rperez-t         ###   ########.fr       */
+/*   Updated: 2026/11/03 10:45:24 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,10 @@ int	ft_printf(const char *format, ...)
 		if (format[state.pos] == '%')
 		{
 			state.pos++;
-			ft_dispatch(format, &arguments, &state);
+			pf_dispatch(format, &arguments, &state);
 		}
 		else
-			ft_add_count(&state, ft_putchar(format[state.pos]));
+			pf_add_count(&state, pf_putchar(format[state.pos]));
 		state.pos++;
 	}
 	va_end(arguments);
