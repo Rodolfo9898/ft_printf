@@ -41,9 +41,11 @@ void	pf_add_count(t_state *state, int written)
 
 static int	pf_print_unknown(char specifier)
 {
-	if (pf_putchar('%') < 0 || pf_putchar(specifier) < 0)
-		return (-1);
-	return (2);
+	char	sequence[2];
+
+	sequence[0] = '%';
+	sequence[1] = specifier;
+	return (pf_write_all(sequence, 2));
 }
 
 int	pf_print_conversion(char specifier, va_list *arguments)
