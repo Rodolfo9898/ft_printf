@@ -22,8 +22,10 @@ Supported conversions:
 
 Flags, field width and precision are not supported (they belong to the bonus
 part, which was not done). An unknown specifier such as `%y` is printed as is,
-as glibc does. A `%` at the very end of the format, or a `NULL` format, makes
-the call return `-1`.
+as glibc does. A `NULL` format, or a format whose last character is a lone `%`
+(such as `"abc%"`), makes the call return `-1` **without printing anything**:
+the format is checked before the first character is written, so the output is
+never left half-done. glibc behaves the same way.
 
 ## Instructions
 
@@ -59,22 +61,29 @@ state in a `t_state` (`ft_printf.h`) and passes a pointer to it around:
 |---|---|
 | `pos` | index of the current character in the format string |
 | `count` | number of characters printed so far, i.e. the return value |
-| `error` | set when a `write` fails, when `count` would overflow `INT_MAX`, or when the format ends in `%` |
+| `error` | set when a `write` fails or when `count` would overflow `INT_MAX` |
 
 These three values always travel together, so a struct with named fields is
 clearer than separate variables, and one pointer lets the dispatcher read the
 position and update the count while staying within the Norm's limit of four
 parameters.
 
-**One pass over the format.** The loop in `ft_printf` stops at the `'\0'` or
-as soon as `error` is set. Ordinary characters are printed straight away. On a
-`%`, `pos` moves to the specifier and `pf_dispatch` takes over. The error flag
-is tested before the next character is read, so a `%` at the very end can
-never make the loop read past the `'\0'`. A `NULL` format returns `-1` at
-once, as glibc does.
+**Check first, then one pass over the format.** A `NULL` format returns `-1`
+at once, as glibc does. Otherwise `pf_format_is_valid` first scans the format
+without printing, skipping each `%` together with the character after it. If a
+`%` is the last character, `ft_printf` returns `-1` before anything is
+written. Without this check, `"abc%"` would print `abc` and only then fail,
+which differs from glibc and leaves the caller with output it cannot undo. The
+check costs one extra pass over the format, which is cheap next to the
+`write` calls.
 
-**Dispatch** (`ft_dispatch.c`). `pf_dispatch` flags a `'\0'` after `%` as an
-error and hands every other specifier to `pf_print_conversion`: an `if` chain
+The printing loop then stops at the `'\0'` or as soon as `error` is set.
+Ordinary characters are printed straight away. On a `%`, `pos` moves to the
+specifier and `pf_dispatch` takes over. Because of the check, that specifier
+is never the `'\0'`, so the loop cannot read past the end of the format.
+
+**Dispatch** (`ft_dispatch.c`). `pf_dispatch` hands the specifier to
+`pf_print_conversion`: an `if` chain
 with one branch per conversion, each reading its argument with the right type
 (`int` for `%c`, `%d` and `%i`, because `char` is promoted to `int` when it is
 passed through `...`; `unsigned int` for `%u`, `%x` and `%X`; `char *` for
@@ -99,8 +108,9 @@ the first argument again.
 `pf_putnbr`, which prints the `-` itself and then hands the magnitude to the
 same routine. Choices:
 - The base is passed as its digit string, so its length is the radix and one
-  function covers every base. The length is computed once per number, and
-  a base with fewer than two digits is rejected with `-1`.
+  function covers every base. The length is computed once per number. Every
+  caller passes one of the fixed digit strings, so the base is not checked
+  again.
 - `number` is a `uintmax_t`, which holds every `unsigned int` and every
   pointer (`uintptr_t`), so no conversion can overflow.
 - `pf_putnbr` negates the `int` as an `unsigned int`, where negation is
@@ -113,7 +123,7 @@ same routine. Choices:
   stays correct wherever `uintmax_t` is wider. It is written in the
   declaration rather than as a `#define`, because the Norm only allows
   literal values in a `#define`. The number is then printed with a single
-  `write`. The buffer lives on the stack, so nothing is allocated and nothing
+  call to `pf_write_all`. The buffer lives on the stack, so nothing is allocated and nothing
   can leak or fail, and no state is kept from one call to the next.
 
 `%s` with `NULL` prints `(null)`, and `%p` with `NULL` prints `NULL_PTR_STR`:
@@ -122,10 +132,11 @@ same routine. Choices:
 **No output buffer.** The subject forbids reimplementing `printf`'s buffer
 management, so output goes straight to `write(2)`: one system call per plain
 character, one per string, and one per number. `write` may write fewer bytes
-than asked (for example when a signal interrupts it on a full pipe), so
-`pf_putstr` calls it again for the rest until the whole string is out, and
-returns `-1` only if `write` fails or writes nothing. A string longer than
-`INT_MAX` returns `-1`, since its length could not be counted. This keeps the
+than asked (for example when a signal interrupts it on a full pipe), so every
+printer goes through `pf_write_all` (`ft_dispatch.c`). It calls `write`
+again for the rest until the whole buffer is out, and returns `-1` only if
+`write` fails or writes nothing. A buffer longer than `INT_MAX` returns `-1`,
+since its length could not be counted. This keeps the
 ordering with other `write` calls predictable, and a failed `write` is seen
 at once, so `ft_printf` returns `-1` immediately instead of failing later at
 flush time.

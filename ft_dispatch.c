@@ -6,11 +6,30 @@
 /*   By: rperez-t <rperez-t@student.42belgium.be>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 14:35:36 by rperez-t          #+#    #+#             */
-/*   Updated: 2026/11/03 10:45:24 by rperez-t         ###   ########.fr       */
+/*   Updated: 2026/11/03 11:41:28 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
+
+/* write may stop early, so loop; more than INT_MAX bytes cannot be counted. */
+int	pf_write_all(const char *buffer, size_t length)
+{
+	size_t	done;
+	ssize_t	written;
+
+	if (length > INT_MAX)
+		return (-1);
+	done = 0;
+	while (done < length)
+	{
+		written = write(1, buffer + done, length - done);
+		if (written <= 0)
+			return (-1);
+		done += written;
+	}
+	return ((int)length);
+}
 
 void	pf_add_count(t_state *state, int written)
 {
@@ -48,13 +67,8 @@ static int	pf_print_conversion(char specifier, va_list *arguments)
 	return (pf_print_unknown(specifier));
 }
 
+/* ft_printf rejects a format ending in '%', so pos never points at '\0'. */
 void	pf_dispatch(const char *format, va_list *arguments, t_state *state)
 {
-	char	specifier;
-
-	specifier = format[state->pos];
-	if (specifier == '\0')
-		state->error = 1;
-	else
-		pf_add_count(state, pf_print_conversion(specifier, arguments));
+	pf_add_count(state, pf_print_conversion(format[state->pos], arguments));
 }

@@ -6,7 +6,7 @@
 /*   By: rperez-t <rperez-t@student.42belgium.be>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/21 08:47:13 by rperez-t          #+#    #+#             */
-/*   Updated: 2026/11/03 11:02:57 by rperez-t         ###   ########.fr       */
+/*   Updated: 2026/11/03 11:41:28 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ typedef struct s_state
 	int		error;
 }	t_state;
 
+int		pf_write_all(const char *buffer, size_t length);
 int		pf_putchar(int c);
 int		pf_putstr(const char *s);
 int		pf_putptr(void *p);

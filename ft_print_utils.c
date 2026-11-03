@@ -6,7 +6,7 @@
 /*   By: rperez-t <rperez-t@student.42belgium.be>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 08:54:25 by rperez-t          #+#    #+#             */
-/*   Updated: 2026/11/03 11:02:57 by rperez-t         ###   ########.fr       */
+/*   Updated: 2026/11/03 11:41:28 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,34 +17,19 @@ int	pf_putchar(int c)
 	char	character;
 
 	character = c;
-	if (write(1, &character, 1) != 1)
-		return (-1);
-	return (1);
+	return (pf_write_all(&character, 1));
 }
 
-/* A string longer than INT_MAX could not be counted in the int return. */
 int	pf_putstr(const char *s)
 {
 	size_t	length;
-	size_t	done;
-	ssize_t	written;
 
 	if (!s)
 		return (pf_putstr("(null)"));
 	length = 0;
 	while (s[length])
 		length++;
-	if (length > INT_MAX)
-		return (-1);
-	done = 0;
-	while (done < length)
-	{
-		written = write(1, s + done, length - done);
-		if (written <= 0)
-			return (-1);
-		done += written;
-	}
-	return ((int)length);
+	return (pf_write_all(s, length));
 }
 
 /* Base 2 needs the most digits: one per bit of a uintmax_t. */
@@ -57,8 +42,6 @@ int	pf_putnbr_base(uintmax_t number, const char *base)
 	base_length = 0;
 	while (base[base_length])
 		base_length++;
-	if (base_length < 2)
-		return (-1);
 	length = 0;
 	while (length == 0 || number > 0)
 	{
@@ -66,9 +49,7 @@ int	pf_putnbr_base(uintmax_t number, const char *base)
 		digits[sizeof(digits) - length] = base[number % base_length];
 		number /= base_length;
 	}
-	if (write(1, digits + sizeof(digits) - length, length) != length)
-		return (-1);
-	return (length);
+	return (pf_write_all(digits + sizeof(digits) - length, length));
 }
 
 /* Negating in unsigned arithmetic is defined even for INT_MIN. */
