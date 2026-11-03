@@ -107,8 +107,12 @@ same routine. Choices:
   defined for every value, so `-INT_MIN` does not overflow whatever the
   size of `long`.
 - Digits are produced least significant first, from right to left, into a
-  local buffer of `MAX_DIGITS` (64) bytes, which is enough for any
-  `uintmax_t` even in base 2. The number is then printed with a single
+  local buffer of `sizeof(uintmax_t) * CHAR_BIT` bytes (64 on usual
+  platforms): one byte per bit, which is enough for any `uintmax_t` even in
+  base 2. The size is derived from the type rather than hard-coded, so it
+  stays correct wherever `uintmax_t` is wider. It is written in the
+  declaration rather than as a `#define`, because the Norm only allows
+  literal values in a `#define`. The number is then printed with a single
   `write`. The buffer lives on the stack, so nothing is allocated and nothing
   can leak or fail, and no state is kept from one call to the next.
 
@@ -117,7 +121,10 @@ same routine. Choices:
 
 **No output buffer.** The subject forbids reimplementing `printf`'s buffer
 management, so output goes straight to `write(2)`: one system call per plain
-character, one per string, and one per number. A string longer than
+character, one per string, and one per number. `write` may write fewer bytes
+than asked (for example when a signal interrupts it on a full pipe), so
+`pf_putstr` calls it again for the rest until the whole string is out, and
+returns `-1` only if `write` fails or writes nothing. A string longer than
 `INT_MAX` returns `-1`, since its length could not be counted. This keeps the
 ordering with other `write` calls predictable, and a failed `write` is seen
 at once, so `ft_printf` returns `-1` immediately instead of failing later at
