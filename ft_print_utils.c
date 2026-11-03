@@ -32,7 +32,7 @@ int	pf_putstr(const char *s)
 	return (pf_write_all(s, length));
 }
 
-/* Base 2 needs the most digits: one per bit of a uintmax_t. */
+/* Sized for the worst case, base 2: one digit per bit of a uintmax_t. */
 int	pf_putnbr_base(uintmax_t number, const char *base)
 {
 	char		digits[sizeof(uintmax_t) * CHAR_BIT];
@@ -42,6 +42,8 @@ int	pf_putnbr_base(uintmax_t number, const char *base)
 	base_length = 0;
 	while (base[base_length])
 		base_length++;
+	if (base_length < 2)
+		return (-1);
 	length = 0;
 	while (length == 0 || number > 0)
 	{

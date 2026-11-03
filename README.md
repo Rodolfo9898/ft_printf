@@ -21,7 +21,10 @@ Supported conversions:
 | `%%` | a literal percent sign |
 
 Flags, field width and precision are not supported (they belong to the bonus
-part, which was not done). An unknown specifier such as `%y` is printed as is,
+part, which was not done). The one exception is `%%`: with flags or a width
+in between, such as `%5%`, it prints a single `%`, as glibc does. Any other
+conversion with flags, such as `%5d`, is printed as is. An unknown specifier
+such as `%y` is printed as is,
 as glibc does. A `NULL` format, or a format whose last character is a lone `%`
 (such as `"abc%"`), makes the call return `-1` **without printing anything**:
 the format is checked before the first character is written, so the output is
@@ -70,8 +73,9 @@ four parameters.
 
 **Check first, then one pass over the format.** A `NULL` format returns `-1`
 at once, as glibc does. Otherwise `pf_format_is_valid` first scans the format
-without printing, skipping each `%` together with the character after it. If a
-`%` is the last character, `ft_printf` returns `-1` before anything is
+without printing, skipping each `%` together with the character after it, or
+a whole `%%` with flags or a width in between, such as `%5%` (measured by
+`pf_flagged_percent_length`). If a `%` is the last character, `ft_printf` returns `-1` before anything is
 written. Without this check, `"abc%"` would print `abc` and only then fail,
 which differs from glibc and leaves the caller with output it cannot undo. The
 check costs one extra pass over the format, which is cheap next to the
@@ -79,10 +83,11 @@ check costs one extra pass over the format, which is cheap next to the
 
 The printing loop then stops at the `'\0'` or as soon as `error` is set.
 Each turn, `pf_print_segment` prints one segment and moves `pos` past it: on a
-`%`, the conversion named by the next character; otherwise, all the plain text
-up to the next `%` (or the end), in a single `write`. Because of the check,
-the character after a `%` is never the `'\0'`, so `pos` cannot move past the
-end of the format.
+`%`, a single `%` for a flagged `%%` such as `%5%`, or else the conversion
+named by the next character; otherwise, all the plain text up to the next `%`
+(or the end), in a single `write`. The check and the printing loop skip the
+same characters, and because of the check the character after a `%` is never
+the `'\0'`, so `pos` cannot move past the end of the format.
 
 **Dispatch** (`ft_dispatch.c`). The specifier goes to
 `pf_print_conversion`: an `if` chain
@@ -111,8 +116,8 @@ the first argument again.
 same routine. Choices:
 - The base is passed as its digit string, so its length is the radix and one
   function covers every base. The length is computed once per number. Every
-  caller passes one of the fixed digit strings, so the base is not checked
-  again.
+  caller passes one of the fixed digit strings; a base shorter than 2 still
+  returns `-1`, since it would divide by zero or never end.
 - `number` is a `uintmax_t`, which holds every `unsigned int` and every
   pointer (`uintptr_t`), so no conversion can overflow.
 - `pf_putnbr` negates the `int` as an `unsigned int`, where negation is
