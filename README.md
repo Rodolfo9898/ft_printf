@@ -130,10 +130,4 @@ flush time.
   to another function
 - The 42 Norm (`en.norm.pdf`) and the ft_printf subject
 
-**Use of AI.** An AI assistant (Claude) was used to review the project, to
-find the `va_list` portability bug and the missing error handling, to patch
-them inside the existing design, and to draft this README. After the
-restructuring, it was also used to handle a `NULL` format, to make `%%`
-explicit in the dispatch, to print numbers from a local buffer, and to
-rewrite the algorithm section above to match the code. All changes were
-tested against the system `printf`.
+**Use of AI.** An AI assistant (Claude) reviewed the finished library against the subject, pointed out failures and explained why they did not match the subject, and proposed fixes.
