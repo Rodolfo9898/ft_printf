@@ -11,29 +11,22 @@
 # **************************************************************************** #
 
 include mk/colors.mk
+include mk/config.mk
+include mk/sources.mk
 
-NAME		= libftprintf.a
+all: $(NAME)
 
-SRCS		= ft_print_utils.c ft_dispatch.c ft_printf.c
-
-OBJS		= ${SRCS:.c=.o}
-
-CC			= cc
-CFLAGS		= -Wall -Werror -Wextra
-
-all: ${NAME}
-
-${NAME}: ${OBJS}
-	@$(call run,ar rcs ${NAME} ${OBJS})
+$(NAME): $(OBJS)
+	@$(call run,$(AR) $(NAME) $(OBJS))
 
 %.o: %.c ft_printf.h
-	@$(call run,${CC} ${CFLAGS} -I . -c $< -o $@)
+	@$(call run,$(CC) $(CFLAGS) -I . -c $< -o $@)
 
 clean:
-	@$(call remove,${OBJS},Removing the objects of ft_printf,objects of ft_printf)
+	@$(call remove,$(OBJS),Removing the objects of ft_printf,objects of ft_printf)
 
 fclean: clean
-	@$(call remove,${NAME},Removing the library ${NAME})
+	@$(call remove,$(NAME),Removing the library $(NAME))
 
 re: fclean all
 
