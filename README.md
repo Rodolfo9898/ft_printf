@@ -41,6 +41,10 @@ make fclean # removes object files and the library
 make re     # rebuilds from scratch
 ```
 
+The output is coloured (`mk/colors.mk`): commands in green, errors in red, warnings in
+yellow. `clean` and `fclean` say in blue what they remove, or warn in yellow when there
+is nothing to remove.
+
 Use it in your own program:
 
 ```c
