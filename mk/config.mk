@@ -15,3 +15,5 @@ NAME		= libftprintf.a
 CC			= cc
 CFLAGS		= -Wall -Werror -Wextra
 AR			= ar rcs
+
+OBJ_DIR		= objects

@@ -12,4 +12,4 @@
 
 SRCS		= ft_print_utils.c ft_dispatch.c ft_printf.c
 
-OBJS		= $(SRCS:.c=.o)
+OBJS		= $(addprefix $(OBJ_DIR)/,$(SRCS:.c=.o))
