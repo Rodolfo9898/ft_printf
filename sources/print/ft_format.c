@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*   ft_format.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rperez-t <rperez-t@student.42belgium.be>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/28 11:09:20 by rperez-t          #+#    #+#             */
-/*   Updated: 2026/11/03 14:59:16 by rperez-t         ###   ########.fr       */
+/*   Created: 2026/11/08 13:04:23 by rperez-t          #+#    #+#             */
+/*   Updated: 2026/11/08 13:04:23 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,17 @@ static size_t	pf_flagged_percent_length(const char *spec)
 	return (0);
 }
 
+static void	pf_add_count(t_state *state, int written)
+{
+	if (written < 0 || written > INT_MAX - state->count)
+		state->error = 1;
+	else
+		state->count += written;
+}
+
 /* Checked before printing so a format ending in a '%', alone or followed only
    by flags or a width ("abc%", "abc%5"), prints nothing, as in glibc. */
-static int	pf_format_is_valid(const char *format)
+int	pf_format_is_valid(const char *format)
 {
 	size_t	pos;
 	size_t	length;
@@ -68,7 +76,7 @@ static int	pf_format_is_valid(const char *format)
 
 /* Prints one conversion, or all the text up to the next '%' in one write.
    The format was validated, so a '%' is never followed by the '\0'. */
-static void	pf_print_segment(const char *format, va_list *arguments,
+void	pf_print_segment(const char *format, va_list *arguments,
 		t_state *state)
 {
 	size_t	length;
@@ -90,23 +98,4 @@ static void	pf_print_segment(const char *format, va_list *arguments,
 		pf_add_count(state, pf_write_all(format + state->pos, length));
 	}
 	state->pos += length;
-}
-
-int	ft_printf(const char *format, ...)
-{
-	t_state	state;
-	va_list	arguments;
-
-	if (!format || !pf_format_is_valid(format))
-		return (-1);
-	va_start(arguments, format);
-	state.pos = 0;
-	state.count = 0;
-	state.error = 0;
-	while (!state.error && format[state.pos] != '\0')
-		pf_print_segment(format, &arguments, &state);
-	va_end(arguments);
-	if (state.error)
-		return (-1);
-	return (state.count);
 }

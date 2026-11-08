@@ -13,38 +13,22 @@
 #ifndef FT_PRINTF_H
 # define FT_PRINTF_H
 
-# include <stdarg.h>
-# include <stddef.h>
-# include <unistd.h>
-# include <stdint.h>
-# include <limits.h>
+# include "core/structs.h"
 
-/* The libc printf prints a NULL %p as "0x0" on macOS and "(nil)" on Linux. */
-# ifdef __APPLE__
-#  define NULL_PTR_STR "0x0"
-# else
-#  define NULL_PTR_STR "(nil)"
-# endif
+/* From ft_printf.c */
+int		ft_printf(const char *format, ...);
 
-# define DECIMAL "0123456789"
-# define HEX_LOWER "0123456789abcdef"
-# define HEX_UPPER "0123456789ABCDEF"
+/* From print/ft_format.c */
+int		pf_format_is_valid(const char *format);
+void	pf_print_segment(const char *format, va_list *arguments,
+			t_state *state);
 
-typedef struct s_state
-{
-	size_t	pos;
-	int		count;
-	int		error;
-}	t_state;
+/* From print/ft_dispatch.c */
+int		pf_print_conversion(char specifier, va_list *arguments);
 
+/* From print/ft_print_utils.c */
 int		pf_write_all(const char *buffer, size_t length);
 int		pf_putchar(int c);
-int		pf_putstr(const char *s);
-int		pf_putptr(void *p);
-int		pf_putnbr(int number);
 int		pf_putnbr_base(uintmax_t number, const char *base);
-void	pf_add_count(t_state *state, int written);
-int		pf_print_conversion(char specifier, va_list *arguments);
-int		ft_printf(const char *format, ...);
 
 #endif

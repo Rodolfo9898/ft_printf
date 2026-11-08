@@ -58,13 +58,13 @@ int	main(void)
 ```
 
 ```sh
-cc -Wall -Wextra -Werror main.c -I. -L. -lftprintf
+cc -Wall -Wextra -Werror main.c -I include -L. -lftprintf
 ```
 
 ## Algorithm and data structure
 
 **State: one small struct.** `ft_printf` (`ft_printf.c`) keeps all of its
-state in a `t_state` (`ft_printf.h`) and passes a pointer to it around:
+state in a `t_state` (`include/core/structs.h`) and passes a pointer to it around:
 
 | Field | Meaning |
 |---|---|
@@ -78,7 +78,8 @@ the position and update the count while staying within the Norm's limit of
 four parameters.
 
 **Check first, then one pass over the format.** A `NULL` format returns `-1`
-at once, as glibc does. Otherwise `pf_format_is_valid` first scans the format
+at once, as glibc does. Otherwise `pf_format_is_valid` (`ft_format.c`) first
+scans the format
 without printing, skipping each `%` together with the character after it, or
 a whole `%%` with flags or a width in between, such as `%5%` (measured by
 `pf_flagged_percent_length`). If a `%` is the last character, or is followed
@@ -90,7 +91,8 @@ check costs one extra pass over the format, which is cheap next to the
 `write` calls.
 
 The printing loop then stops at the `'\0'` or as soon as `error` is set.
-Each turn, `pf_print_segment` prints one segment and moves `pos` past it: on a
+Each turn, `pf_print_segment` (`ft_format.c`) prints one segment and moves
+`pos` past it: on a
 `%`, a single `%` for a flagged `%%` such as `%5%`, or else the conversion
 named by the next character; otherwise, all the plain text up to the next `%`
 (or the end), in a single `write`. The check and the printing loop skip the
@@ -109,7 +111,8 @@ function pointers was not used: every conversion reads a different argument
 type, so each entry would need its own wrapper, and for nine cases the chain
 is shorter and easier to follow.
 Every printer returns the number of characters it wrote, or `-1`.
-`pf_add_count` adds that number to `count`, or sets `error` if the number is
+`pf_add_count` (`ft_format.c`) adds that number to `count`, or sets `error` if
+the number is
 `-1` or the total would go past `INT_MAX`.
 
 The `va_list` travels down the chain **by pointer**: the C standard leaves a
@@ -151,7 +154,7 @@ of plain text, one per string, and one per number. Plain text needs no buffer,
 since it is already contiguous in the format string. `write` may write fewer
 bytes than asked (for example when a signal arrives after part of the data was
 written to a full pipe), so every printer goes through `pf_write_all`
-(`ft_dispatch.c`). It calls `write` again for the rest until the whole buffer
+(`ft_print_utils.c`). It calls `write` again for the rest until the whole buffer
 is out, and returns `-1` if `write` fails or writes nothing. A `write`
 interrupted before writing anything fails with `EINTR` and is not retried,
 because `errno` is not among the subject's authorized functions; `ft_printf`

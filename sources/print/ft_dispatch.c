@@ -1,26 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_print_utils.c                                   :+:      :+:    :+:   */
+/*   ft_dispatch.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rperez-t <rperez-t@student.42belgium.be>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/30 08:54:25 by rperez-t          #+#    #+#             */
-/*   Updated: 2026/11/03 14:51:49 by rperez-t         ###   ########.fr       */
+/*   Created: 2023/11/29 14:35:36 by rperez-t          #+#    #+#             */
+/*   Updated: 2026/11/03 13:15:37 by rperez-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	pf_putchar(int c)
+static int	pf_print_unknown(char specifier)
 {
-	char	character;
+	char	sequence[2];
 
-	character = c;
-	return (pf_write_all(&character, 1));
+	sequence[0] = '%';
+	sequence[1] = specifier;
+	return (pf_write_all(sequence, 2));
 }
 
-int	pf_putstr(const char *s)
+static int	pf_putstr(const char *s)
 {
 	size_t	length;
 
@@ -32,30 +33,8 @@ int	pf_putstr(const char *s)
 	return (pf_write_all(s, length));
 }
 
-/* Sized for the worst case, base 2: one digit per bit of a uintmax_t. */
-int	pf_putnbr_base(uintmax_t number, const char *base)
-{
-	char		digits[sizeof(uintmax_t) * CHAR_BIT];
-	uintmax_t	base_length;
-	int			length;
-
-	base_length = 0;
-	while (base[base_length])
-		base_length++;
-	if (base_length < 2)
-		return (-1);
-	length = 0;
-	while (length == 0 || number > 0)
-	{
-		length++;
-		digits[sizeof(digits) - length] = base[number % base_length];
-		number /= base_length;
-	}
-	return (pf_write_all(digits + sizeof(digits) - length, length));
-}
-
 /* Negating in unsigned arithmetic is defined even for INT_MIN. */
-int	pf_putnbr(int number)
+static int	pf_putnbr(int number)
 {
 	unsigned int	magnitude;
 	int				count;
@@ -76,7 +55,7 @@ int	pf_putnbr(int number)
 	return (count + written);
 }
 
-int	pf_putptr(void *p)
+static int	pf_putptr(void *p)
 {
 	int	count;
 
@@ -88,4 +67,25 @@ int	pf_putptr(void *p)
 	if (count < 0)
 		return (-1);
 	return (count + 2);
+}
+
+int	pf_print_conversion(char specifier, va_list *arguments)
+{
+	if (specifier == 'c')
+		return (pf_putchar(va_arg(*arguments, int)));
+	if (specifier == 's')
+		return (pf_putstr(va_arg(*arguments, char *)));
+	if (specifier == 'p')
+		return (pf_putptr(va_arg(*arguments, void *)));
+	if (specifier == 'd' || specifier == 'i')
+		return (pf_putnbr(va_arg(*arguments, int)));
+	if (specifier == 'u')
+		return (pf_putnbr_base(va_arg(*arguments, unsigned int), DECIMAL));
+	if (specifier == 'x')
+		return (pf_putnbr_base(va_arg(*arguments, unsigned int), HEX_LOWER));
+	if (specifier == 'X')
+		return (pf_putnbr_base(va_arg(*arguments, unsigned int), HEX_UPPER));
+	if (specifier == '%')
+		return (pf_putchar('%'));
+	return (pf_print_unknown(specifier));
 }

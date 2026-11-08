@@ -19,9 +19,9 @@ all: $(NAME)
 $(NAME): $(OBJS)
 	@$(call run,$(AR) $(NAME) $(OBJS))
 
-$(OBJ_DIR)/%.o: %.c ft_printf.h
+$(OBJ_DIR)/%.o: %.c $(HEADERS)
 	@mkdir -p $(@D)
-	@$(call run,$(CC) $(CFLAGS) -I . -c $< -o $@)
+	@$(call run,$(CC) $(CFLAGS) -I $(INC_DIR) -c $< -o $@)
 
 clean:
 	@$(call remove,$(OBJ_DIR),Removing the objects of ft_printf,objects of ft_printf)
