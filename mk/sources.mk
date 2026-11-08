@@ -15,6 +15,6 @@ SRC_DIR		= sources
 INC_DIR		= include
 PRINT_SRCS	= ft_print_utils.c ft_dispatch.c ft_format.c
 SRCS		= $(addprefix $(SRC_DIR)/print/,$(PRINT_SRCS)) $(SRC_DIR)/ft_printf.c
-HEADERS		= $(INC_DIR)/ft_printf.h $(addprefix $(INC_DIR)/core/,libs.h defines.h structs.h)
+HEADERS		= $(INC_DIR)/ft_printf.h $(addprefix $(INC_DIR)/core/ft_printf_,libs.h defines.h structs.h)
 
 OBJS		= $(addprefix $(OBJ_DIR)/,$(SRCS:.c=.o))

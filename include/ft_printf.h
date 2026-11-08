@@ -13,7 +13,7 @@
 #ifndef FT_PRINTF_H
 # define FT_PRINTF_H
 
-# include "core/structs.h"
+# include "core/ft_printf_structs.h"
 
 /* From ft_printf.c */
 int		ft_printf(const char *format, ...);

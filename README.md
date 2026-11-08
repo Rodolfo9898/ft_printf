@@ -64,7 +64,7 @@ cc -Wall -Wextra -Werror main.c -I include -L. -lftprintf
 ## Algorithm and data structure
 
 **State: one small struct.** `ft_printf` (`ft_printf.c`) keeps all of its
-state in a `t_state` (`include/core/structs.h`) and passes a pointer to it around:
+state in a `t_state` (`include/core/ft_printf_structs.h`) and passes a pointer to it around:
 
 | Field | Meaning |
 |---|---|
