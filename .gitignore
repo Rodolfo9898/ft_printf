@@ -13,4 +13,4 @@ a.out
 verdict.md
 
 # object folder
-objects/
+build/

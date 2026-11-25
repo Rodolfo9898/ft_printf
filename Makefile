@@ -24,7 +24,7 @@ $(OBJ_DIR)/%.o: %.c $(HEADERS)
 	@$(call run,$(CC) $(CFLAGS) -I $(INC_DIR) -c $< -o $@)
 
 clean:
-	@$(call remove,$(OBJ_DIR),Removing the objects of ft_printf,objects of ft_printf)
+	@$(call remove,$(BUILD_DIR),Removing the objects of ft_printf,objects of ft_printf)
 
 fclean: clean
 	@$(call remove,$(NAME),Removing the library $(NAME))

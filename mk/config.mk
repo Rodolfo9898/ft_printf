@@ -16,4 +16,6 @@ CC			= cc
 CFLAGS		= -Wall -Werror -Wextra
 AR			= ar rcs
 
-OBJ_DIR		= objects
+BUILD_DIR	= build
+# The objects, in build/; the archive stays at the root.
+OBJ_DIR		= $(BUILD_DIR)/mandatory
