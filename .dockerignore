@@ -1,0 +1,7 @@
+# Build output and local leftovers stay out of the image: it builds from scratch.
+.git
+libftprintf.a
+build/
+**/*.o
+verdict.md
+verdict-report.md

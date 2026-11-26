@@ -19,3 +19,4 @@ AR			= ar rcs
 BUILD_DIR	= build
 # The objects, in build/; the archive stays at the root.
 OBJ_DIR		= $(BUILD_DIR)/mandatory
+DOCKER_IMAGE	= ft_printf-test

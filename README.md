@@ -39,6 +39,11 @@ make        # builds libftprintf.a
 make clean  # removes object files
 make fclean # removes object files and the library
 make re     # rebuilds from scratch
+
+make docker-mandatory  # make re on Linux, in Docker (see below)
+make docker-shell      # a bash shell in the Docker image, libftprintf.a built
+make docker-build      # builds the image (the two rules above do it for you)
+make docker-clean      # removes the image
 ```
 
 The output is coloured (`mk/colors.mk`): commands in green, errors in red, warnings in
@@ -60,6 +65,33 @@ int	main(void)
 ```sh
 cc -Wall -Wextra -Werror main.c -I include -L. -lftprintf
 ```
+
+### Testing on Linux with Docker
+
+The `Dockerfile` builds ft_printf in Debian, from scratch and with the same flags
+(`-Wall -Wextra -Werror`), so the result does not depend on your machine. valgrind is
+installed there to test the library with your own programs. The project has no test
+scripts: the image proves that the library builds on Linux. `.dockerignore` keeps the
+objects and `libftprintf.a` out of the image, so it never reuses a build made on your
+machine.
+
+```sh
+make docker-mandatory                                  # make re in the image
+make docker-shell                                      # bash inside the image
+make docker-build && docker run --rm ft_printf-test    # the same, by hand
+make docker-clean                                      # remove the image
+```
+
+Each rule rebuilds the image first, so it always builds the current sources.
+`make docker-mandatory` fails if the library does not compile.
+
+A plain `make` that fails also prints, in yellow, `dependencies missing: run make
+docker-shell to have them all inside the docker container` (`mk/hint.mk`). The build
+runs as always, in a second `make`, and its exit status is kept: the line only comes
+after its errors. Only the plain `make` does it: `make clean`, `make re`, any other
+rule, a Ctrl-C and a `make` inside the container print nothing extra. A mistake in your
+own code shows it too, so read the errors above it first. A project that builds this library with `make -C` stays quiet about it: only its own `make` says the line. `make docker-shell` gives a
+shell in the Linux image, with `libftprintf.a` built.
 
 ## Algorithm and data structure
 
